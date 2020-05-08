@@ -133,6 +133,12 @@ class MyClient(discord.Client):
                 set_roll = -1
                 await channel.send("Rolls cleared.")
 
+        if message.content == "!reroll":
+            if await require_role(message, "Oficer"):
+                rolls.clear()
+                already_rolled.clear()
+                await channel.send("Reroll ready.")
+
 
 token = get_token("token.txt")
 
