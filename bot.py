@@ -1,3 +1,5 @@
+import asyncio
+
 import discord
 import logging
 import numpy as np
@@ -9,20 +11,28 @@ logging.basicConfig(level=logging.INFO)
 #author_of_roll is an discord.author object
 rolls = []
 already_rolled = set()
+set_roll = -1
 
-
+#token.txt hold token for this bot, should be in the same directory
 def get_token(filename):
     with open(filename) as file:
         txt = file.readlines()
         return txt[0].strip()
 
+#returns list of all the winners
 def get_all_winners(rolls):
-    reverse_i = -1
-    winners = [rolls[-1]]
-    if rolls[-1][1] == rolls[-2][1]:
-        while(rolls[reverse_i][1] == rolls[reverse_i - 1][1]):
-            winners.append(rolls[reverse_i - 1])
+    winning_roll = rolls[-1][1]
+    winners = []
+    for roll in rolls:
+        if roll[1] == winning_roll:
+            winners.append(roll)
     return winners, len(winners)
+
+def get_list_of_winners(winners):
+    res = ""
+    for winner in winners:
+        res += winner[0].mention + ", "
+    return res
 
 
 class MyClient(discord.Client):
@@ -35,6 +45,7 @@ class MyClient(discord.Client):
         channel = message.channel
 
         global rolls
+        global set_roll
 
         if message.author == self.user:
             return
@@ -42,9 +53,18 @@ class MyClient(discord.Client):
         if message.content.startswith('!test'):
             await channel.send(message.author.name)
 
-        if message.content.startswith('!dice '):
+        if message.content.startswith('!setroll '):
             try:
-                number = int(message.content[6:])
+                number = int(message.content[9:])
+                set_roll = number
+
+                await channel.send("Roll set to: " + str(set_roll) + " by " + message.author.mention)
+            except ValueError:
+                await channel.send(message.author.mention + " typed command wrongly, I give up.")
+
+        if message.content == '!dice':
+            try:
+                number = set_roll
                 author = message.author
                 roll = np.random.randint(number) + 1
 
@@ -61,7 +81,6 @@ class MyClient(discord.Client):
 
             users = list(map(lambda x: x[0].nick + str(np.random.randint(1234352))  if x[0].nick is not None else x[0].name + str(np.random.randint(1234352)), rolls))
             score = list(map(lambda x: x[1], rolls))
-            await channel.send(rolls)
 
             fig = plt.figure()
 
@@ -79,9 +98,19 @@ class MyClient(discord.Client):
             plt.show()
             with open("to_send.png", 'rb') as file:
                 await channel.send(file = discord.File(file, "chart.png"))
+
         if message.content == "!winner":
             rolls = sorted(rolls, key=lambda x: x[1])
-            winners = get_all_winners(rolls)
+            winners, number_of_winners = get_all_winners(rolls)
+            if number_of_winners == 1:
+                await channel.send("Aaaand the winner is " + winners[0][0].mention + " with score " + str(winners[0][1]) + ", congratulations!!")
+            if number_of_winners > 1:
+                await channel.send("We had a tie! The top spot is occupied by: " + get_list_of_winners(winners) + "all having the score of " + str(winners[0][1]))
+            else:
+                await channel.send("Something went wrong with '!winner' command. I give up :(")
+
+        if message.content == "!myroles":
+            await channel.send(list(map(lambda x: x.name, message.author.roles)))
 
 
 
