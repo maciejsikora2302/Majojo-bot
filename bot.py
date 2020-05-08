@@ -60,8 +60,8 @@ class MyClient(discord.Client):
         if message.author == self.user:
             return
 
-        if message.content.startswith('!test'):
-            await channel.send(message.author.name)
+        if message.content.startswith('!mhelp'):
+            await channel.send("available commands: !help, !setroll, !dice, !res, !winner, !clear, !reroll")
 
         if message.content.startswith('!setroll '):
             if await require_role(message, "Oficer"):
@@ -83,7 +83,7 @@ class MyClient(discord.Client):
                     already_rolled.add(str(author))
                     rolls.append((author, roll))
 
-                await channel.send(author.mention + " is rolling " + str(number) + " dice! And rolled " + str(roll))
+                await channel.send(author.mention + " rolled **" + str(roll) + "** using D" + str(number) + " dice!")
             except ValueError:
                 await channel.send(message.author.mention + " typed command wrongly or roll has not been set yet, "
                                                             "I give up.")
@@ -122,7 +122,7 @@ class MyClient(discord.Client):
                         winners[0][1]) + ", congratulations!!")
                 elif number_of_winners > 1:
                     await channel.send("We had a tie! The top spot is occupied by: " + get_list_of_winners(
-                        winners) + "all having the score of " + str(winners[0][1]))
+                        winners) + "all having a score of " + str(winners[0][1]))
                 else:
                     await channel.send("Something went wrong with '!winner' command. I give up :(")
 
