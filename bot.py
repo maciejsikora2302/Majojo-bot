@@ -40,7 +40,7 @@ def get_list_of_winners(winners):
 
 async def require_role(message, role_name):
     if role_name not in list(map(lambda x: x.name, message.author.roles)):
-        await message.channel.send("You do not have permission to use this command. " + message.author.mention)
+        await message.channel.send("Nie masz wystarczających uprawnień aby skorzystać z tej komendy. " + message.author.mention)
         return False
     return True
 
@@ -60,20 +60,20 @@ class MyClient(discord.Client):
         if message.author == self.user:
             return
 
-        if message.content.startswith('!mhelp'):
-            await channel.send("available commands: !help, !setroll, !dice, !res, !winner, !clear, !reroll")
+        if message.content.startswith('!majojohelp'):
+            await channel.send("available commands: !help, !dice, !roll, !res, !winner, !clear, !reroll")
 
-        if message.content.startswith('!setroll '):
+        if message.content.startswith('!dice '):
             if await require_role(message, "Oficer"):
                 try:
-                    number = int(message.content[9:])
+                    number = int(message.content[6:])
                     set_roll = number
 
-                    await channel.send("Roll set to: " + str(set_roll) + " by " + message.author.mention)
+                    await channel.send("Dice set to: " + str(set_roll) + " by " + message.author.mention)
                 except ValueError:
                     await channel.send(message.author.mention + " typed command wrongly, I give up.")
 
-        if message.content == '!dice':
+        if message.content == '!roll':
             try:
                 number = set_roll
                 author = message.author
@@ -83,7 +83,7 @@ class MyClient(discord.Client):
                     already_rolled.add(str(author))
                     rolls.append((author, roll))
 
-                await channel.send(author.mention + " rolled **" + str(roll) + "** using D" + str(number) + " dice!")
+                await channel.send("Rzut kostką D" + str(number) + " dla " + author.mention + " wynosi **" + str(roll) + "**")
             except ValueError:
                 await channel.send(message.author.mention + " typed command wrongly or roll has not been set yet, "
                                                             "I give up.")
@@ -118,11 +118,11 @@ class MyClient(discord.Client):
                 rolls = sorted(rolls, key=lambda x: x[1])
                 winners, number_of_winners = get_all_winners(rolls)
                 if number_of_winners == 1:
-                    await channel.send("Aaaand the winner is " + winners[0][0].mention + " with score " + str(
-                        winners[0][1]) + ", congratulations!!")
+                    await channel.send("Wygrywa " + winners[0][0].mention + " z wynikiem " + str(
+                        winners[0][1]) + ", gratulacje!!")
                 elif number_of_winners > 1:
-                    await channel.send("We had a tie! The top spot is occupied by: " + get_list_of_winners(
-                        winners) + "all having a score of " + str(winners[0][1]))
+                    await channel.send("Mamy remis między: " + get_list_of_winners(
+                        winners) + ". Wszyscy posiadają wynik równy " + str(winners[0][1]))
                 else:
                     await channel.send("Something went wrong with '!winner' command. I give up :(")
 
