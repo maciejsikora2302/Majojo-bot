@@ -66,10 +66,13 @@ class MyClient(discord.Client):
         if message.content.startswith('!dice '):
             if await require_role(message, "Oficer"):
                 try:
+                    rolls.clear()
+                    already_rolled.clear()
+                    set_roll = -1
                     number = int(message.content[6:])
                     set_roll = number
 
-                    await channel.send("Dice set to: " + str(set_roll) + " by " + message.author.mention)
+                    await channel.send("Kostka ustawiona na: " + str(set_roll) + " przez " + message.author.mention)
                 except ValueError:
                     await channel.send(message.author.mention + " typed command wrongly, I give up.")
 
@@ -99,11 +102,20 @@ class MyClient(discord.Client):
                 fig = plt.figure()
 
                 ax = fig.add_subplot(111)
-                ax.barh(users, score)
+                #223 46 16
 
-                ax.set_title("Wyniki dla każdego uczestnika")
-                ax.set_ylabel("Wynik")
-                # ax.set_xlabel("")
+                red = 230
+                green = 126
+                blue = 34
+
+                colors = list(map(lambda x: x/255, [red, green, blue]))
+                colors.append(1)
+
+                ax.barh(users, score, color = colors)
+
+                ax.set_title("Wyniki")
+                # ax.set_ylabel("Wynik")
+                # ax.set_xlabel("Wynik")
 
                 for index, value in enumerate(score):
                     plt.text(value, index, str(value))
@@ -121,8 +133,7 @@ class MyClient(discord.Client):
                     await channel.send("Wygrywa " + winners[0][0].mention + " z wynikiem " + str(
                         winners[0][1]) + ", gratulacje!!")
                 elif number_of_winners > 1:
-                    await channel.send("Mamy remis między: " + get_list_of_winners(
-                        winners) + ". Wszyscy posiadają wynik równy " + str(winners[0][1]))
+                    await channel.send("Mamy remis między: " + get_list_of_winners(winners) + " ich wynik to " + str(winners[0][1]) + ".")
                 else:
                     await channel.send("Something went wrong with '!winner' command.")
 
