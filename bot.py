@@ -61,7 +61,7 @@ class MyClient(discord.Client):
             return
 
         if message.content.startswith('!majojohelp'):
-            await channel.send("available commands: !help, !dice, !roll, !res, !winner, !clear, !reroll")
+            await channel.send("Available commands: !majojohelp, !dice, !roll, !res, !winner, !clear, !reroll")
 
         if message.content.startswith('!dice '):
             if await require_role(message, "Oficer"):
@@ -101,9 +101,9 @@ class MyClient(discord.Client):
                 ax = fig.add_subplot(111)
                 ax.barh(users, score)
 
-                ax.set_title("Rolls for each participant")
-                ax.set_ylabel("Rolls")
-                ax.set_xlabel("Users")
+                ax.set_title("Wyniki dla każdego uczestnika")
+                ax.set_ylabel("Wynik")
+                # ax.set_xlabel("")
 
                 for index, value in enumerate(score):
                     plt.text(value, index, str(value))
@@ -124,15 +124,15 @@ class MyClient(discord.Client):
                     await channel.send("Mamy remis między: " + get_list_of_winners(
                         winners) + ". Wszyscy posiadają wynik równy " + str(winners[0][1]))
                 else:
-                    await channel.send("Something went wrong with '!winner' command. I give up :(")
+                    await channel.send("Something went wrong with '!winner' command.")
 
-        if message.content == "!clear":
+
+        if message.content == "!new":
             if await require_role(message, "Oficer"):
                 rolls.clear()
                 already_rolled.clear()
                 set_roll = -1
                 await channel.send("Rolls cleared.")
-
         if message.content == "!reroll":
             if await require_role(message, "Oficer"):
                 rolls.clear()
