@@ -40,7 +40,8 @@ def get_list_of_winners(winners):
 
 async def require_role(message, role_name):
     if role_name not in list(map(lambda x: x.name, message.author.roles)):
-        await message.channel.send("Nie masz wystarczających uprawnień aby skorzystać z tej komendy. " + message.author.mention)
+        await message.channel.send(
+            "Nie masz wystarczających uprawnień aby skorzystać z tej komendy. " + message.author.mention)
         return False
     return True
 
@@ -80,13 +81,14 @@ class MyClient(discord.Client):
             try:
                 number = set_roll
                 author = message.author
-                roll = np.random.randint(number) + 1
+                roll = np.random.randint(low=1, high=number + 1)
 
                 if str(author) not in already_rolled:
                     already_rolled.add(str(author))
                     rolls.append((author, roll))
 
-                await channel.send("Rzut kostką D" + str(number) + " dla " + author.mention + " wynosi **" + str(roll) + "**")
+                await channel.send(
+                    "Rzut kostką D" + str(number) + " dla " + author.mention + " wynosi **" + str(roll) + "**")
             except ValueError:
                 await channel.send(message.author.mention + " typed command wrongly or roll has not been set yet, "
                                                             "I give up.")
@@ -102,16 +104,16 @@ class MyClient(discord.Client):
                 fig = plt.figure()
 
                 ax = fig.add_subplot(111)
-                #223 46 16
+                # 223 46 16
 
                 red = 230
                 green = 126
                 blue = 34
 
-                colors = list(map(lambda x: x/255, [red, green, blue]))
+                colors = list(map(lambda x: x / 255, [red, green, blue]))
                 colors.append(1)
 
-                ax.barh(users, score, color = colors)
+                ax.barh(users, score, color=colors)
 
                 ax.set_title("Wyniki")
                 # ax.set_ylabel("Wynik")
@@ -133,10 +135,10 @@ class MyClient(discord.Client):
                     await channel.send("Wygrywa " + winners[0][0].mention + " z wynikiem " + str(
                         winners[0][1]) + ", gratulacje!!")
                 elif number_of_winners > 1:
-                    await channel.send("Mamy remis między: " + get_list_of_winners(winners) + " ich wynik to " + str(winners[0][1]) + ".")
+                    await channel.send("Mamy remis między: " + get_list_of_winners(winners) + " ich wynik to " + str(
+                        winners[0][1]) + ".")
                 else:
                     await channel.send("Something went wrong with '!winner' command.")
-
 
         if message.content == "!new":
             if await require_role(message, "Oficer"):
