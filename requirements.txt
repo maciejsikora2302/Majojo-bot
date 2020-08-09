@@ -3,4 +3,3 @@ discord.py
 numpy
 matplotlib
 asyncio
-logging
