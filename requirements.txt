@@ -1,5 +1,5 @@
 discord
-dircord.py
+discord.py
 numpy
 matplotlib
 asyncio
