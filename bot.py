@@ -115,19 +115,43 @@ commands.append(
     )
 )
 
+async def brewqser_easter_egg(channel, number, author):
+    brewek_rolls = [np.random.randint(low=1, high=number + 1) for _ in range(4)]
+    msg = f"Ha {author.mention}! Znowu próbujesz uzyskać skarby gildyjne! " + \
+    "Tym razem nie pójdzie ci tak łatwo! Rzucasz z trzykrotnym utrudnieniem! "+ \
+    f"Wyrzuciłeś **{brewek_rolls[0]}**, **{brewek_rolls[1]}**, **{brewek_rolls[2]}** i **{brewek_rolls[3]}** " + \
+    f",a więc ostatecznie twoim rzutem jest **{min(brewek_rolls)}**. "
+
+    if min(brewek_rolls) == 1:
+        msg += "Uuuu jedyneczka, chyba wiemy kto sponsoruje dzisiejszą loterię :> :> :>"
+    elif number in brewek_rolls:
+        msg += "O, patrz, a mogłeś mieć maxa, jaka szkoda... >:D"
+
+    await channel.send(msg)
+
+    return min(brewek_rolls)
+
 async def roll(channel, message):
     global rolls
     global set_roll
     try:
         number = set_roll
         author = message.author
-        roll = np.random.randint(low=1, high=number + 1)
+        # if str(author) == 'Brewqser#8390':
+        if str(author) == 'Magomir#5691':
+            roll = await brewqser_easter_egg(channel, number, author)
+        else:
+            roll = np.random.randint(low=1, high=number + 1)
 
         if str(author) not in already_rolled:
             already_rolled.add(str(author))
             rolls.append((author, roll))
+            if str(author) != 'Brewqser#8390':
+                await channel.send(f"Rzut kostką D{number} dla {author.mention} wynosi **{roll}**")
+        else:
+            await channel.send(f"W tej rundzie już rzucałeś/łaś {author.mention} ;)")
 
-        await channel.send(f"Rzut kostką D{number} dla {author.mention} wynosi **{roll}**")
+
     except Exception as e:
         await channel.send(f"{author.mention} typed command wrongly or roll has not been set yet. Error: {e}")
 
